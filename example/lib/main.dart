@@ -50,8 +50,82 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final epubController = EpubController();
+  final ValueNotifier<double> _fontSize = ValueNotifier<double>(16.0);
+  double _fontSizeProgress = 16.0;
 
   var textSelectionCfi = '';
+
+  updateFontSettings() {
+    return showModalBottomSheet(
+        context: context,
+        elevation: 10,
+        clipBehavior: Clip.antiAlias,
+        backgroundColor: Colors.white,
+        enableDrag: true,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (context) {
+          return SingleChildScrollView(
+              child: StatefulBuilder(
+                  builder: (BuildContext context, setState) => SizedBox(
+                        height: 70,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            "Aa",
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Expanded(
+                                            child: ValueListenableBuilder(
+                                                valueListenable: _fontSize,
+                                                builder: (_, fontSize, __) {
+                                                  return Slider(
+                                                    activeColor: Colors.blue,
+                                                    value: _fontSizeProgress,
+                                                    min: 15.0,
+                                                    max: 30.0,
+                                                    onChangeEnd:
+                                                        (double value) {
+                                                      _fontSizeProgress = value;
+                                                      _fontSize.value = value;
+                                                    },
+                                                    onChanged: (double value) {
+                                                      ///For updating widget's inside
+                                                      setState(() {
+                                                        _fontSizeProgress =
+                                                            value;
+                                                      });
+                                                    },
+                                                  );
+                                                }),
+                                          ),
+                                          const Text(
+                                            "Aa",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  )),
+                            ),
+                          ],
+                        ),
+                      )));
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,59 +137,78 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SearchPage(
-                            epubController: epubController,
-                          )));
-            },
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.search),
+          //   onPressed: () {
+          //     Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (context) => SearchPage(
+          //                   epubController: epubController,
+          //                 )));
+          //   },
+          // ),
+          InkWell(
+              onTap: () {
+                updateFontSettings();
+              },
+              child: Container(
+                width: 40,
+                alignment: Alignment.center,
+                child: const Text(
+                  "Aa",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              )),
         ],
       ),
-      body: SafeArea(
-          child: Column(
-        children: [
-          Expanded(
-            child: EpubViewer(
-              epubUrl: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-              epubController: epubController,
-              displaySettings: EpubDisplaySettings(
-                  flow: EpubFlow.paginated,
-                  snap: true,
-                  allowScriptedContent: true),
-              selectionContextMenu: ContextMenu(
-                menuItems: [
-                  ContextMenuItem(
-                    title: "Highlight",
-                    id: 1,
-                    action: () async {
-                      epubController.addHighlight(cfi: textSelectionCfi);
+      body: ValueListenableBuilder(
+          valueListenable: _fontSize,
+          builder: (_, fontSize, __) {
+            return SafeArea(
+                child: Column(
+              children: [
+                Expanded(
+                  child: EpubViewer(
+                    epubUrl:
+                        "https://cdn.ambition.guru/agcdn/medias/2024/7/16/Apramaya.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240718%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240718T035915Z&X-Amz-SignedHeaders=host&X-Amz-Expires=569745&X-Amz-Signature=77a7c238f21f1b5259f17f6347a6d48557d290a3a4478647a22de5923af03347",
+                    // 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
+                    fontSize: fontSize.toInt(),
+                    epubController: epubController,
+                    displaySettings: EpubDisplaySettings(
+                        flow: EpubFlow.paginated,
+                        snap: true,
+                        allowScriptedContent: true),
+                    selectionContextMenu: ContextMenu(
+                      menuItems: [
+                        ContextMenuItem(
+                          title: "Highlight",
+                          id: 1,
+                          action: () async {
+                            epubController.addHighlight(cfi: textSelectionCfi);
+                          },
+                        ),
+                      ],
+                      settings: ContextMenuSettings(
+                          hideDefaultSystemContextMenuItems: true),
+                    ),
+                    headers: {},
+                    onChaptersLoaded: (chapters) {},
+                    onEpubLoaded: () async {
+                      print('Epub loaded');
+                    },
+                    onRelocated: (value) {
+                      print("Reloacted to $value");
+                    },
+                    onTextSelected: (epubTextSelection) {
+                      textSelectionCfi = epubTextSelection.selectionCfi;
+                      print(textSelectionCfi);
                     },
                   ),
-                ],
-                settings: ContextMenuSettings(
-                    hideDefaultSystemContextMenuItems: true),
-              ),
-              headers: {},
-              onChaptersLoaded: (chapters) {},
-              onEpubLoaded: () async {
-                print('Epub loaded');
-              },
-              onRelocated: (value) {
-                print("Reloacted to $value");
-              },
-              onTextSelected: (epubTextSelection) {
-                textSelectionCfi = epubTextSelection.selectionCfi;
-                print(textSelectionCfi);
-              },
-            ),
-          ),
-        ],
-      )),
+                ),
+              ],
+            ));
+          }),
     );
   }
 }

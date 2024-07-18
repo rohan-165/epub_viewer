@@ -140,6 +140,7 @@ class EpubController {
 
 class LocalServerController {
   final InAppLocalhostServer _localhostServer = InAppLocalhostServer(
+      port: 8001,
       documentRoot: 'packages/flutter_epub_viewer/lib/assets/webpage');
 
   Future<void> initServer() async {
