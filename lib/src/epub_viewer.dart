@@ -168,35 +168,63 @@ class _EpubViewerState extends State<EpubViewer> {
                       contextMenu: widget.selectionContextMenu,
                       key: webViewKey,
                       initialUrlRequest: URLRequest(
-                          url: WebUri(
+                          url: Uri.parse(
                               'http://localhost:8001/html/swipe.html?epubUrl=${base64String}&cfi=${widget.initialCfi ?? ''}&displaySettings=$displaySettings&headers=$headers')),
-                      initialSettings: InAppWebViewSettings(
-                        isInspectable: kDebugMode,
-                        javaScriptEnabled: true,
-                        mediaPlaybackRequiresUserGesture: false,
-                        transparentBackground: true,
-                        supportZoom: false,
-                        builtInZoomControls: false,
-                        displayZoomControls: false,
-                        allowsInlineMediaPlayback: true,
-                        disableLongPressContextMenuOnLinks: false,
-                        iframeAllowFullscreen: true,
-                        allowsLinkPreview: false,
-                        verticalScrollBarEnabled: false,
-                        defaultFontSize: widget.fontSize,
-                        selectionGranularity: SelectionGranularity.CHARACTER,
-                      ),
+                      // initialSettings: InAppWebViewSettings(
+                      //   isInspectable: kDebugMode,
+                      //   javaScriptEnabled: true,
+                      //   mediaPlaybackRequiresUserGesture: false,
+                      //   transparentBackground: true,
+                      //   supportZoom: false,
+                      //   builtInZoomControls: false,
+                      //   displayZoomControls: false,
+                      //   allowsInlineMediaPlayback: true,
+                      //   disableLongPressContextMenuOnLinks: false,
+                      //   iframeAllowFullscreen: true,
+                      //   allowsLinkPreview: false,
+                      //   verticalScrollBarEnabled: false,
+                      //   defaultFontSize: widget.fontSize,
+                      //   selectionGranularity: SelectionGranularity.CHARACTER,
+                      // ),
                       // pullToRefreshController: pullToRefreshController,
+                      androidOnPermissionRequest:
+                          (InAppWebViewController controller, String origin,
+                              List<String> resources) async {
+                        return PermissionRequestResponse(
+                            resources: resources,
+                            action: PermissionRequestResponseAction.GRANT);
+                      },
+                      initialOptions: InAppWebViewGroupOptions(
+                        crossPlatform: InAppWebViewOptions(
+                          supportZoom: false,
+                          mediaPlaybackRequiresUserGesture: false,
+                          javaScriptEnabled: true,
+                          userAgent:
+                              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
+                        ),
+                        android: AndroidInAppWebViewOptions(
+                          defaultFontSize: widget.fontSize ?? 16,
+                          builtInZoomControls:
+                              false, // Disable built-in zoom controls
+                          displayZoomControls: false, // Hide zoom controls
+                          useHybridComposition:
+                              true, // Enable hybrid composition to improve performance on Android
+                        ),
+                        ios: IOSInAppWebViewOptions(
+                          allowsInlineMediaPlayback: true,
+                          allowsAirPlayForMediaPlayback: true,
+                        ),
+                      ),
                       onWebViewCreated: (controller) {
                         webViewController = controller;
                         widget.epubController.setWebViewController(controller);
                         addJavaScriptHandlers();
                       },
-                      onPermissionRequest: (controller, request) async {
-                        return PermissionResponse(
-                            resources: request.resources,
-                            action: PermissionResponseAction.GRANT);
-                      },
+                      // onPermissionRequest: (controller, request) async {
+                      //   return PermissionResponse(
+                      //       resources: request.resources,
+                      //       action: PermissionResponseAction.GRANT);
+                      // },
                       shouldOverrideUrlLoading:
                           (controller, navigationAction) async {
                         var uri = navigationAction.request.url!;
@@ -224,7 +252,7 @@ class _EpubViewerState extends State<EpubViewer> {
                       },
                       onLoadStart: (controller, url) async {},
                       onLoadStop: (controller, url) async {},
-                      onReceivedError: (controller, request, error) {},
+                      // onReceivedError: (controller, request, error) {},
                       onProgressChanged: (controller, progress) {},
                       onUpdateVisitedHistory:
                           (controller, url, androidIsReload) {},

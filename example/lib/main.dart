@@ -183,14 +183,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       menuItems: [
                         ContextMenuItem(
                           title: "Highlight",
-                          id: 1,
+                          androidId: 1,
+                          iosId: "1",
                           action: () async {
                             epubController.addHighlight(cfi: textSelectionCfi);
                           },
                         ),
                       ],
-                      settings: ContextMenuSettings(
-                          hideDefaultSystemContextMenuItems: true),
+                      // settings: ContextMenuSettings(
+                      //     hideDefaultSystemContextMenuItems: true),
                     ),
                     headers: {},
                     onChaptersLoaded: (chapters) {},
