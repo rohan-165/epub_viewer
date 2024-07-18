@@ -34,15 +34,69 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Epub Viewer Demo'),
+      home: const MainScreen(),
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text("E-pub"),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyHomePage(
+                                title: ' 1',
+                                url:
+                                    "https://cdn.ambition.guru/agcdn/medias/2024/7/16/Apramaya.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240718%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240718T035915Z&X-Amz-SignedHeaders=host&X-Amz-Expires=569745&X-Amz-Signature=77a7c238f21f1b5259f17f6347a6d48557d290a3a4478647a22de5923af03347",
+                              )));
+                },
+                child: const Text("E-pub 1")),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyHomePage(
+                                title: ' 2',
+                                url:
+                                    "https://cdn.ambition.guru/agcdn/medias/2024/7/12/Junga-Bdrko-Yug-NEW.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240718%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240718T111502Z&X-Amz-SignedHeaders=host&X-Amz-Expires=543598&X-Amz-Signature=4fde73d2992388e575c9d9d00427486676381971abbac911f4a67c0e63325c38",
+                              )));
+                },
+                child: const Text("E-pub 2")),
+          ],
+        ),
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({
+    super.key,
+    required this.title,
+    required this.url,
+  });
 
   final String title;
+  final String url;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -170,8 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Expanded(
                   child: EpubViewer(
-                    epubUrl:
-                        "https://cdn.ambition.guru/agcdn/medias/2024/7/16/Apramaya.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240718%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240718T035915Z&X-Amz-SignedHeaders=host&X-Amz-Expires=569745&X-Amz-Signature=77a7c238f21f1b5259f17f6347a6d48557d290a3a4478647a22de5923af03347",
+                    epubUrl: widget.url,
                     // 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
                     fontSize: fontSize.toInt(),
                     epubController: epubController,

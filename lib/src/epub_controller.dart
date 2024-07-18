@@ -146,12 +146,16 @@ class LocalServerController {
   );
 
   Future<void> initServer() async {
-    if (_localhostServer.isRunning()) return;
-    await _localhostServer.start();
+    if (!_localhostServer.isRunning()) {
+      await _localhostServer.start();
+    }
+    return;
   }
 
   Future<void> disposeServer() async {
-    if (!_localhostServer.isRunning()) return;
-    await _localhostServer.close();
+    if (_localhostServer.isRunning()) {
+      await _localhostServer.close();
+    }
+    return;
   }
 }
