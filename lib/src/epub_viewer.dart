@@ -140,12 +140,6 @@ class _EpubViewerState extends State<EpubViewer> {
   }
 
   @override
-  void dispose() {
-    localServerController.disposeServer();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: localServerController.initServer(),
