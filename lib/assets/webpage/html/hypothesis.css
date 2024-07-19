@@ -53,7 +53,7 @@ svg {
   padding-top: 10px;
 
   transition: left .2s ease-out;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 #navigation.open {
@@ -235,7 +235,7 @@ svg {
     top: 5%;
     opacity: .15;
     box-shadow: -2px 0 15px rgba(0, 0, 0, 1);
-    content:  "";
+    content: "";
   }
 
   #prev {
@@ -282,11 +282,13 @@ svg {
   color: #ccc;
 }
 
-.arrow:hover, .navlink:hover {
+.arrow:hover,
+.navlink:hover {
   color: #777;
 }
 
-.arrow:active, .navlink:hover {
+.arrow:active,
+.navlink:hover {
   color: #000;
 }
 
@@ -305,9 +307,9 @@ svg {
   width: 480px;
   height: 660px;
   margin: -30px auto;
-  -moz-box-shadow:      inset 10px 0 20px rgba(0,0,0,.1);
-  -webkit-box-shadow:   inset 10px 0 20px rgba(0,0,0,.1);
-  box-shadow:           inset 10px 0 20px rgba(0,0,0,.1);
+  -moz-box-shadow: inset 10px 0 20px rgba(0, 0, 0, .1);
+  -webkit-box-shadow: inset 10px 0 20px rgba(0, 0, 0, .1);
+  box-shadow: inset 10px 0 20px rgba(0, 0, 0, .1);
 }
 
 #book-viewer iframe {
@@ -324,6 +326,6 @@ svg {
   display: none;
 }
 
-#controls > input[type=range] {
-    width: 400px;
+#controls>input[type=range] {
+  width: 400px;
 }

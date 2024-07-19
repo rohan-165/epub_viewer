@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background: #fafafa;
+  background: #ffffff;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
 
@@ -36,8 +36,8 @@ body {
   top: calc(50vh - 400px);
 }
 
-#viewer.spreads .epub-view > iframe {
-    background: white;
+#viewer.spreads .epub-view>iframe {
+  background: white;
 }
 
 #viewer.scrolled {
@@ -51,8 +51,8 @@ body {
   background: white;
 }
 
-#viewer.scrolled .epub-view > iframe {
-    background: white;
+#viewer.scrolled .epub-view>iframe {
+  background: white;
 }
 
 #prev {
@@ -80,7 +80,7 @@ body {
     top: 5%;
     opacity: .15;
     box-shadow: -2px 0 15px rgba(0, 0, 0, 1);
-    content:  "";
+    content: "";
   }
 
   #viewer.spreads.single:after {
@@ -119,11 +119,13 @@ body {
   color: #ccc;
 }
 
-.arrow:hover, .navlink:hover {
+.arrow:hover,
+.navlink:hover {
   color: #777;
 }
 
-.arrow:active, .navlink:hover {
+.arrow:active,
+.navlink:hover {
   color: #000;
 }
 
@@ -142,9 +144,9 @@ body {
   width: 480px;
   height: 660px;
   margin: -30px auto;
-  -moz-box-shadow:      inset 10px 0 20px rgba(0,0,0,.1);
-  -webkit-box-shadow:   inset 10px 0 20px rgba(0,0,0,.1);
-  box-shadow:           inset 10px 0 20px rgba(0,0,0,.1);
+  -moz-box-shadow: inset 10px 0 20px rgba(0, 0, 0, .1);
+  -webkit-box-shadow: inset 10px 0 20px rgba(0, 0, 0, .1);
+  box-shadow: inset 10px 0 20px rgba(0, 0, 0, .1);
 }
 
 #book-viewer iframe {
@@ -161,8 +163,8 @@ body {
   display: none;
 }
 
-#controls > input[type=range] {
-    width: 400px;
+#controls>input[type=range] {
+  width: 400px;
 }
 
 #navigation {

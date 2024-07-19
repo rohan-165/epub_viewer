@@ -205,8 +205,6 @@ class _EpubViewerState extends State<EpubViewer> {
                               'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
                         ),
                         android: AndroidInAppWebViewOptions(
-                          scrollBarStyle:
-                              AndroidScrollBarStyle.SCROLLBARS_INSIDE_OVERLAY,
                           overScrollMode:
                               AndroidOverScrollMode.OVER_SCROLL_NEVER,
                           defaultFontSize: widget.fontSize ?? 16,
