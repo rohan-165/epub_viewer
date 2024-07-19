@@ -219,49 +219,44 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ValueListenableBuilder(
           valueListenable: _fontSize,
           builder: (_, fontSize, __) {
-            return SafeArea(
-                child: Column(
-              children: [
-                Expanded(
-                  child: EpubViewer(
-                    epubUrl: widget.url,
-                    // 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-                    fontSize: fontSize.toInt(),
-                    epubController: epubController,
-                    displaySettings: EpubDisplaySettings(
-                        flow: EpubFlow.paginated,
-                        snap: true,
-                        allowScriptedContent: true),
-                    selectionContextMenu: ContextMenu(
-                      menuItems: [
-                        ContextMenuItem(
-                          title: "Highlight",
-                          androidId: 1,
-                          iosId: "1",
-                          action: () async {
-                            epubController.addHighlight(cfi: textSelectionCfi);
-                          },
-                        ),
-                      ],
-                      // settings: ContextMenuSettings(
-                      //     hideDefaultSystemContextMenuItems: true),
+            return Center(
+              child: EpubViewer(
+                epubUrl: widget.url,
+                // 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
+                fontSize: fontSize.toInt(),
+                epubController: epubController,
+                displaySettings: EpubDisplaySettings(
+                    flow: EpubFlow.paginated,
+                    snap: true,
+                    allowScriptedContent: true),
+                selectionContextMenu: ContextMenu(
+                  menuItems: [
+                    ContextMenuItem(
+                      title: "Highlight",
+                      androidId: 1,
+                      iosId: "1",
+                      action: () async {
+                        epubController.addHighlight(cfi: textSelectionCfi);
+                      },
                     ),
-                    headers: {},
-                    onChaptersLoaded: (chapters) {},
-                    onEpubLoaded: () async {
-                      print('Epub loaded');
-                    },
-                    onRelocated: (value) {
-                      print("Reloacted to $value");
-                    },
-                    onTextSelected: (epubTextSelection) {
-                      textSelectionCfi = epubTextSelection.selectionCfi;
-                      print(textSelectionCfi);
-                    },
-                  ),
+                  ],
+                  // settings: ContextMenuSettings(
+                  //     hideDefaultSystemContextMenuItems: true),
                 ),
-              ],
-            ));
+                headers: {},
+                onChaptersLoaded: (chapters) {},
+                onEpubLoaded: () async {
+                  print('Epub loaded');
+                },
+                onRelocated: (value) {
+                  print("Reloacted to $value");
+                },
+                onTextSelected: (epubTextSelection) {
+                  textSelectionCfi = epubTextSelection.selectionCfi;
+                  print(textSelectionCfi);
+                },
+              ),
+            );
           }),
     );
   }
