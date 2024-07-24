@@ -104,8 +104,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final epubController = EpubController();
-  final ValueNotifier<double> _fontSize = ValueNotifier<double>(16.0);
-  double _fontSizeProgress = 16.0;
+  final ValueNotifier<double> _fontSize = ValueNotifier<double>(30.0);
+  double _fontSizeProgress = 30.0;
 
   var textSelectionCfi = '';
 
@@ -147,8 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   return Slider(
                                                     activeColor: Colors.blue,
                                                     value: _fontSizeProgress,
-                                                    min: 15.0,
-                                                    max: 30.0,
+                                                    min: 30.0,
+                                                    max: 50.0,
                                                     onChangeEnd:
                                                         (double value) {
                                                       _fontSizeProgress = value;
