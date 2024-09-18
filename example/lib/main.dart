@@ -65,7 +65,7 @@ class _MainScreenState extends State<MainScreen> {
                           builder: (context) => const MyHomePage(
                                 title: ' 1',
                                 url:
-                                    "https://cdn.ambition.guru/agcdn/medias/2024/7/16/Apramaya.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240718%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240718T035915Z&X-Amz-SignedHeaders=host&X-Amz-Expires=569745&X-Amz-Signature=77a7c238f21f1b5259f17f6347a6d48557d290a3a4478647a22de5923af03347",
+                                    "https://cdn.ambition.guru/agcdn/medias/2024/8/21/Rudane-3.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240918%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240918T113933Z&X-Amz-SignedHeaders=host&X-Amz-Expires=542127&X-Amz-Signature=5ab990100b8f40971486cf10d2cba8282d49a7593a1afd096fb7c725bfb39061",
                               )));
                 },
                 child: const Text("E-pub 1")),
