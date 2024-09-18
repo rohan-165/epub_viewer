@@ -168,7 +168,7 @@ class _EpubViewerState extends State<EpubViewer> {
                       contextMenu: widget.selectionContextMenu,
                       key: webViewKey,
                       initialUrlRequest: URLRequest(
-                          url: Uri.parse(
+                          url: WebUri(
                               'http://localhost:8001/html/swipe.html?epubUrl=${base64String}&cfi=${widget.initialCfi ?? ''}&displaySettings=$displaySettings&headers=$headers')),
                       // initialSettings: InAppWebViewSettings(
                       //   isInspectable: kDebugMode,

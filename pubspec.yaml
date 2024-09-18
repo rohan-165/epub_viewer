@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_inappwebview: ^5.7.2+3
+  flutter_inappwebview: ^6.0.0
   json_annotation: ^4.8.0
 
 platforms:
