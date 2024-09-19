@@ -72,24 +72,8 @@ class _EpubViewerState extends State<EpubViewer> {
 
   InAppWebViewController? webViewController;
 
-  InAppWebViewSettings settings = InAppWebViewSettings();
-
   @override
   void initState() {
-    settings = InAppWebViewSettings(
-      defaultFontSize: widget.fontSize,
-      isInspectable: kDebugMode,
-      javaScriptEnabled: true,
-      mediaPlaybackRequiresUserGesture: false,
-      transparentBackground: true,
-      supportZoom: false,
-      allowsInlineMediaPlayback: true,
-      disableLongPressContextMenuOnLinks: false,
-      iframeAllowFullscreen: true,
-      allowsLinkPreview: false,
-      verticalScrollBarEnabled: false,
-      selectionGranularity: SelectionGranularity.CHARACTER,
-    );
     super.initState();
   }
 
@@ -188,71 +172,115 @@ class _EpubViewerState extends State<EpubViewer> {
     bool snap = displaySettings.snap;
     bool allowScripted = displaySettings.allowScriptedContent;
     String cfi = widget.initialCfi ?? "";
+    dynamic fontSize = displaySettings.fontSize;
 
     webViewController?.evaluateJavascript(
         source:
-            'loadBook([${data.join(',')}], "$cfi", "$manager", "$flow", "$spread", $snap, $allowScripted)');
+            'loadBook([${data.join(',')}], "$cfi", "$manager", "$flow", "$spread", $snap, $allowScripted, $fontSize)');
+    _isLoading.value = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return InAppWebView(
-      contextMenu: widget.selectionContextMenu,
-      key: webViewKey,
-      initialFile:
-          'packages/flutter_epub_viewer/lib/assets/webpage/html/swipe.html',
-      // initialUrlRequest: URLRequest(
-      //     url: WebUri(
-      //         'http://localhost:8080/html/swipe.html?cfi=${widget.initialCfi ?? ''}&displaySettings=$displaySettings')),
-      initialSettings: settings,
-      // pullToRefreshController: pullToRefreshController,
-      onWebViewCreated: (controller) async {
-        webViewController = controller;
-        widget.epubController.setWebViewController(controller);
-        // await loadBook();
-        addJavaScriptHandlers();
-      },
-      onLoadStart: (controller, url) {},
-      onPermissionRequest: (controller, request) async {
-        return PermissionResponse(
-            resources: request.resources,
-            action: PermissionResponseAction.GRANT);
-      },
-      shouldOverrideUrlLoading: (controller, navigationAction) async {
-        var uri = navigationAction.request.url!;
+    return ValueListenableBuilder(
+        valueListenable: _isLoading,
+        builder: (_, isLoading, __) {
+          return Stack(
+            children: [
+              InAppWebView(
+                contextMenu: widget.selectionContextMenu,
+                key: webViewKey,
+                initialFile:
+                    'packages/flutter_epub_viewer/lib/assets/webpage/html/swipe.html',
+                // initialUrlRequest: URLRequest(
+                //     url: WebUri(
+                //         'http://localhost:8080/html/swipe.html?cfi=${widget.initialCfi ?? ''}&displaySettings=$displaySettings')),
+                initialSettings: InAppWebViewSettings(
+                  defaultFixedFontSize: widget.fontSize,
+                  defaultFontSize: widget.fontSize,
+                  isInspectable: kDebugMode,
+                  javaScriptEnabled: true,
+                  mediaPlaybackRequiresUserGesture: false,
+                  transparentBackground: true,
+                  supportZoom: false,
+                  allowsInlineMediaPlayback: true,
+                  disableLongPressContextMenuOnLinks: false,
+                  iframeAllowFullscreen: true,
+                  allowsLinkPreview: false,
+                  verticalScrollBarEnabled: false,
+                  selectionGranularity: SelectionGranularity.CHARACTER,
+                ),
+                // pullToRefreshController: pullToRefreshController,
+                onWebViewCreated: (controller) async {
+                  webViewController = controller;
+                  widget.epubController.setWebViewController(controller);
+                  await loadBook();
+                  addJavaScriptHandlers();
+                },
+                onLoadStart: (controller, url) {},
+                onPermissionRequest: (controller, request) async {
+                  return PermissionResponse(
+                      resources: request.resources,
+                      action: PermissionResponseAction.GRANT);
+                },
+                shouldOverrideUrlLoading: (controller, navigationAction) async {
+                  var uri = navigationAction.request.url!;
 
-        if (!["http", "https", "file", "chrome", "data", "javascript", "about"]
-            .contains(uri.scheme)) {
-          // if (await canLaunchUrl(uri)) {
-          //   // Launch the App
-          //   await launchUrl(
-          //     uri,
-          //   );
-          //   // and cancel the request
-          //   return NavigationActionPolicy.CANCEL;
-          // }
-        }
+                  if (![
+                    "http",
+                    "https",
+                    "file",
+                    "chrome",
+                    "data",
+                    "javascript",
+                    "about"
+                  ].contains(uri.scheme)) {
+                    // if (await canLaunchUrl(uri)) {
+                    //   // Launch the App
+                    //   await launchUrl(
+                    //     uri,
+                    //   );
+                    //   // and cancel the request
+                    //   return NavigationActionPolicy.CANCEL;
+                    // }
+                  }
 
-        return NavigationActionPolicy.ALLOW;
-      },
-      onLoadStop: (controller, url) async {},
-      onReceivedError: (controller, request, error) {},
+                  return NavigationActionPolicy.ALLOW;
+                },
+                onLoadStop: (controller, url) async {
+                  _isLoading.value = false;
+                },
+                onReceivedError: (controller, request, error) {},
 
-      onProgressChanged: (controller, progress) {},
-      onUpdateVisitedHistory: (controller, url, androidIsReload) {},
-      onConsoleMessage: (controller, consoleMessage) {
-        if (kDebugMode) {
-          debugPrint("JS_LOG: ${consoleMessage.message}");
-          // debugPrint(consoleMessage.message);
-        }
-      },
-      gestureRecognizers: {
-        Factory<VerticalDragGestureRecognizer>(
-            () => VerticalDragGestureRecognizer()),
-        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(
-            duration: const Duration(milliseconds: 30))),
-      },
-    );
+                onProgressChanged: (controller, progress) {},
+                onUpdateVisitedHistory: (controller, url, androidIsReload) {},
+                onConsoleMessage: (controller, consoleMessage) {
+                  if (kDebugMode) {
+                    debugPrint("JS_LOG: ${consoleMessage.message}");
+                    // debugPrint(consoleMessage.message);
+                  }
+                },
+                gestureRecognizers: {
+                  Factory<VerticalDragGestureRecognizer>(
+                      () => VerticalDragGestureRecognizer()),
+                  Factory<LongPressGestureRecognizer>(() =>
+                      LongPressGestureRecognizer(
+                          duration: const Duration(milliseconds: 30))),
+                },
+              ),
+              // if (isLoading) ...{
+              //   Positioned.fill(
+              //     child: Container(
+              //       color: Colors.white,
+              //       child: const Center(
+              //         child: CircularProgressIndicator(),
+              //       ),
+              //     ),
+              //   )
+              // },
+            ],
+          );
+        });
   }
 
   @override

@@ -78,7 +78,7 @@ class _MainScreenState extends State<MainScreen> {
                           builder: (context) => const MyHomePage(
                                 title: ' 2',
                                 url:
-                                    "https://cdn.ambition.guru/agcdn/medias/2024/7/12/Junga-Bdrko-Yug-NEW.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240718%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240718T111502Z&X-Amz-SignedHeaders=host&X-Amz-Expires=543598&X-Amz-Signature=4fde73d2992388e575c9d9d00427486676381971abbac911f4a67c0e63325c38",
+                                    "https://cdn.ambition.guru/agcdn/medias/2024/8/21/Rudane-3.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240919%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240919T053947Z&X-Amz-SignedHeaders=host&X-Amz-Expires=563713&X-Amz-Signature=bf38adc44756ca86c5a35f7ab06ffb7557e161bd43cf2f0875ce00eacff38f0a",
                               )));
                 },
                 child: const Text("E-pub 2")),
@@ -219,102 +219,69 @@ class _MyHomePageState extends State<MyHomePage> {
               )),
         ],
       ),
-      // body: ValueListenableBuilder(
-      //     valueListenable: _fontSize,
-      //     builder: (_, fontSize, __) {
-      //       return Center(
-      //         child: EpubViewer(
-      //           epubUrl: widget.url,
-      //           // 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-      //           fontSize: fontSize.toInt(),
-      //           epubController: epubController,
-      //           displaySettings: EpubDisplaySettings(
-      //               flow: EpubFlow.paginated,
-      //               snap: true,
-      //               allowScriptedContent: true),
-      //           selectionContextMenu: ContextMenu(
-      //             menuItems: [
-      //               ContextMenuItem(
-      //                 title: "Highlight",
-      //                 androidId: 1,
-      //                 iosId: "1",
-      //                 action: () async {
-      //                   epubController.addHighlight(cfi: textSelectionCfi);
-      //                 },
-      //               ),
-      //             ],
-      //             // settings: ContextMenuSettings(
-      //             //     hideDefaultSystemContextMenuItems: true),
-      //           ),
-      //           headers: {},
-      //           onChaptersLoaded: (chapters) {},
-      //           onEpubLoaded: () async {
-      //             print('Epub loaded');
-      //           },
-      //           onRelocated: (value) {
-      //             print("Reloacted to $value");
-      //           },
-      //           onTextSelected: (epubTextSelection) {
-      //             textSelectionCfi = epubTextSelection.selectionCfi;
-      //             print(textSelectionCfi);
-      //           },
-      //         ),
-      //       );
-      //     }),
       body: SafeArea(
           child: Column(
         children: [
           Expanded(
-            child: Stack(
-              children: [
-                EpubViewer(
-                  epubSource: EpubSource.fromUrl(
-                      'https://github.com/IDPF/epub3-samples/releases/download/20230704/accessible_epub_3.epub'),
-                  epubController: epubController,
-                  displaySettings: EpubDisplaySettings(
-                      flow: EpubFlow.paginated,
-                      snap: true,
-                      allowScriptedContent: true),
-                  selectionContextMenu: ContextMenu(
-                    menuItems: [
-                      ContextMenuItem(
-                        title: "Highlight",
-                        id: 1,
-                        action: () async {
-                          epubController.addHighlight(cfi: textSelectionCfi);
+            child: ValueListenableBuilder(
+                valueListenable: _fontSize,
+                builder: (_, fontSize, __) {
+                  return Stack(
+                    children: [
+                      EpubViewer(
+                        epubSource: EpubSource.fromUrl(widget.url
+                            // 'https://github.com/IDPF/epub3-samples/releases/download/20230704/accessible_epub_3.epub',
+                            ),
+                        epubController: epubController,
+                        fontSize: fontSize.toInt(),
+                        displaySettings: EpubDisplaySettings(
+                          fontSize: fontSize.toInt(),
+                          flow: EpubFlow.paginated,
+                          snap: true,
+                          allowScriptedContent: true,
+                        ),
+                        selectionContextMenu: ContextMenu(
+                          menuItems: [
+                            ContextMenuItem(
+                              title: "Highlight",
+                              id: 1,
+                              action: () async {
+                                epubController.addHighlight(
+                                    cfi: textSelectionCfi);
+                              },
+                            ),
+                          ],
+                          settings: ContextMenuSettings(
+                              hideDefaultSystemContextMenuItems: true),
+                        ),
+                        onChaptersLoaded: (chapters) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        },
+                        onEpubLoaded: () async {
+                          print('Epub loaded');
+                        },
+                        onRelocated: (value) {
+                          print("Reloacted to $value");
+                        },
+                        onAnnotationClicked: (cfi) {
+                          print("Annotation clicked $cfi");
+                        },
+                        onTextSelected: (epubTextSelection) {
+                          textSelectionCfi = epubTextSelection.selectionCfi;
+                          print(textSelectionCfi);
                         },
                       ),
+                      Visibility(
+                        visible: isLoading,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
                     ],
-                    settings: ContextMenuSettings(
-                        hideDefaultSystemContextMenuItems: true),
-                  ),
-                  onChaptersLoaded: (chapters) {
-                    setState(() {
-                      isLoading = false;
-                    });
-                  },
-                  onEpubLoaded: () async {
-                    print('Epub loaded');
-                  },
-                  onRelocated: (value) {
-                    print("Reloacted to $value");
-                  },
-                  onAnnotationClicked: (cfi) {
-                    print("Annotation clicked $cfi");
-                  },
-                  onTextSelected: (epubTextSelection) {
-                    textSelectionCfi = epubTextSelection.selectionCfi;
-                    print(textSelectionCfi);
-                  },
-                ),
-                Visibility(
-                  visible: isLoading,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              ],
-            ),
+                  );
+                }),
           ),
         ],
       )),

@@ -68,7 +68,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.2"
+    version: "1.1.2"
   flutter_inappwebview:
     dependency: transitive
     description:
@@ -179,32 +179,18 @@ packages:
     dependency: transitive
     description:
       name: leak_tracker
-<<<<<<< HEAD
       sha256: "3f87a60e8c63aecc975dda1ceedbc8f24de75f09e4856ea27daf8958f2f0ce05"
       url: "https://pub.dev"
     source: hosted
     version: "10.0.5"
-=======
-      sha256: "7f0df31977cb2c0b88585095d168e689669a2cc9b97c309665e3386f3e9d341a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "10.0.4"
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
   leak_tracker_flutter_testing:
     dependency: transitive
     description:
       name: leak_tracker_flutter_testing
-<<<<<<< HEAD
       sha256: "932549fb305594d82d7183ecd9fa93463e9914e1b67cacc34bc40906594a1806"
       url: "https://pub.dev"
     source: hosted
     version: "3.0.5"
-=======
-      sha256: "06e98f569d004c1315b991ded39924b21af84cf14cc94791b8aea337d25b57f8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.3"
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
   leak_tracker_testing:
     dependency: transitive
     description:
@@ -241,17 +227,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-<<<<<<< HEAD
       sha256: bdb68674043280c3428e9ec998512fb681678676b3c54e773629ffe74419f8c7
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
-=======
-      sha256: "7687075e408b093f36e6bbf6c91878cc0d4cd10f409506f7bc996f68220b9136"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.12.0"
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
   path:
     dependency: transitive
     description:
@@ -317,16 +296,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-<<<<<<< HEAD
       sha256: "5b8a98dafc4d5c4c9c72d8b31ab2b23fc13422348d2997120294d3bac86b4ddb"
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
-=======
-      sha256: "9955ae474176f7ac8ee4e989dadfb411a58c30415bcfb648fa04b2b8a03afa7f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.0"
   typed_data:
     dependency: transitive
     description:
@@ -335,7 +308,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
   vector_math:
     dependency: transitive
     description:
@@ -348,18 +320,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-<<<<<<< HEAD
       sha256: f652077d0bdf60abe4c1f6377448e8655008eef28f128bc023f7b5e8dfeb48fc
       url: "https://pub.dev"
     source: hosted
     version: "14.2.4"
-sdks:
-  dart: ">=3.3.1 <4.0.0"
-=======
-      sha256: "3923c89304b715fb1eb6423f017651664a03bf5f4b29983627c4da791f74a4ec"
-      url: "https://pub.dev"
-    source: hosted
-    version: "14.2.1"
   web:
     dependency: transitive
     description:
@@ -370,5 +334,4 @@ sdks:
     version: "1.0.0"
 sdks:
   dart: ">=3.4.0 <4.0.0"
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
   flutter: ">=3.18.0-18.0.pre.54"

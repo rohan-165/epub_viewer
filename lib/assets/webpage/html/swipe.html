@@ -8,11 +8,7 @@
   <title>EPUB</title>
   <!-- <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/detect_swipe/2.1.1/jquery.detect_swipe.min.js"></script> -->
-<<<<<<< HEAD
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
-=======
-	<script src="../dist/jszip.min.js"></script>
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
+  <script src="../dist/jszip.min.js"></script>
   <script src="../dist/epub.js"></script>
 
 
@@ -59,101 +55,45 @@
 <body>
   <div id="viewer"></div>
   <script>
-<<<<<<< HEAD
-    const base64Decode = (encodedStr) => {
-      try {
-        // Use atob to decode the base64 string
-        let decodedStr = atob(encodedStr);
-        return decodedStr;
-      } catch (e) {
-        console.error("Failed to decode base64 string: ", e);
-        return null;
-      }
-    };
-    var params =
-      URLSearchParams &&
-      new URLSearchParams(document.location.search.substring(1));
-    var epubUrl = base64Decode(
-      params &&
-      params.get("epubUrl") &&
-      decodeURIComponent(params.get("epubUrl"))
-    );
-    var accessToken = (params && params.get("accessToken")) ? params.get("accessToken") : undefined;
-    var cfi = (params && params.get("cfi")) ? params.get("cfi") : undefined;
-    var displaySettings = (params && params.get("displaySettings")) ? params.get("displaySettings") : undefined;
-    var headers = (params && params.get("headers")) ? params.get("headers") : undefined;
 
-    if (headers) {
-      headers = headers.replaceAll("/", "");
-      headers = JSON.parse(headers);
-    }
-    if (displaySettings) {
-      displaySettings = JSON.parse(displaySettings)
-    }
+    // const base64Decode = (encodedStr) => {
+    //       try {
+    //         // Use atob to decode the base64 string
+    //         let decodedStr = atob(encodedStr);
+    //         return decodedStr;
+    //       } catch (e) {
+    //         console.error("Failed to decode base64 string: ", e);
+    //         return null;
+    //       }
+    //     };
+    //     var params =
+    //       URLSearchParams &&
+    //       new URLSearchParams(document.location.search.substring(1));
+    //     var epubUrl = base64Decode(
+    //       params &&
+    //       params.get("epubUrl") &&
+    //       decodeURIComponent(params.get("epubUrl"))
+    //     );
+    //     var accessToken = (params && params.get("accessToken")) ? params.get("accessToken") : undefined;
+    //     var cfi = (params && params.get("cfi")) ? params.get("cfi") : undefined;
+    //     var displaySettings = (params && params.get("displaySettings")) ? params.get("displaySettings") : undefined;
+    //     var headers = (params && params.get("headers")) ? params.get("headers") : undefined;
 
+    //     if (headers) {
+    //       headers = headers.replaceAll("/", "");
+    //       headers = JSON.parse(headers);
+    //     }
+    //     if (displaySettings) {
+    //       displaySettings = JSON.parse(displaySettings)
+    //     }
 
-
-    //loading epub
-    var book = ePub(epubUrl, {
-      requestHeaders: headers
-    });
-
-    var rendition = book.renderTo("viewer", {
-      manager: displaySettings.manager,
-      flow: displaySettings.flow,
-      // method: "continuous",
-      spread: displaySettings.spread,
-      width: "100%",
-      height: "100vh",
-      snap: displaySettings.snap,
-      allowScriptedContent: displaySettings.allowScriptedContent,
-    });
-
-
-    var displayed;
-
-    if (cfi) {
-      displayed = rendition.display(cfi)
-    } else {
-      displayed = rendition.display(1)
-    }
-
-    displayed.then(function (renderer) {
-      window.flutter_inappwebview.callHandler('displayed');
-    });
-
-
-
-    var chapters = []
-
-    ///loading chapters
-    book.loaded.navigation.then(function (toc) {
-      chapters = parseChapters(toc)
-      window.flutter_inappwebview.callHandler('chapters');
-    })
-
-
-
-    rendition.on("rendered", function () {
-      window.flutter_inappwebview.callHandler('rendered');
-    })
-
-
-    ///text selection callback
-    rendition.on("selected", function (cfiRange, contents) {
-      book.getRange(cfiRange).then(function (range) {
-        var selectedText = range.toString();
-        var args = [cfiRange.toString(), selectedText]
-        window.flutter_inappwebview.callHandler('selection', ...args);
-=======
-    
     var params = URLSearchParams && new URLSearchParams(document.location.search.substring(1));
     // var epubUrl = params && params.get("epubUrl") && decodeURIComponent(params.get("epubUrl"));
     var accessToken = (params && params.get("accessToken")) ? params.get("accessToken") : undefined;
     // var cfi = (params && params.get("cfi")) ? params.get("cfi") : undefined;
     // var displaySettings= (params && params.get("displaySettings")) ? params.get("displaySettings") : undefined;
-    
-   
+
+
 
     //loading epub
     var book = ePub();
@@ -161,95 +101,78 @@
     var displayed;
     var chapters = []
 
-    
 
-    function loadBook(data, cfi, manager, flow, spread, snap,allowScriptedContent){
+
+    function loadBook(data, cfi, manager, flow, spread, snap, allowScriptedContent, fontSize) {
       var uint8Array = new Uint8Array(data)
       book.open(uint8Array,)
       rendition = book.renderTo("viewer", {
         manager: manager,
         flow: flow,
         // method: "continuous",
-        spread:spread,
+        spread: spread,
         width: "100%",
         height: "100%",
         snap: snap,
         allowScriptedContent: allowScriptedContent,
+        fontSize: fontSize,
       });
 
-      if(cfi){
+      if (cfi) {
         displayed = rendition.display(cfi)
-      }else{
+      } else {
         displayed = rendition.display(1)
       }
 
-      displayed.then(function(renderer){
+      displayed.then(function (renderer) {
         console.log("displayed")
         window.flutter_inappwebview.callHandler('displayed');
       });
 
-      book.loaded.navigation.then(function(toc){
-       chapters = parseChapters(toc)
-       window.flutter_inappwebview.callHandler('chapters');
-     })
+      book.loaded.navigation.then(function (toc) {
+        chapters = parseChapters(toc)
+        window.flutter_inappwebview.callHandler('chapters');
+      })
 
-      rendition.on("rendered" , function(){
+      rendition.on("rendered", function () {
         window.flutter_inappwebview.callHandler('rendered');
       })
 
-     ///text selection callback
-      rendition.on("selected", function(cfiRange,contents){
+      ///text selection callback
+      rendition.on("selected", function (cfiRange, contents) {
         book.getRange(cfiRange).then(function (range) {
           var selectedText = range.toString();
-          var args = [cfiRange.toString(),selectedText]
+          var args = [cfiRange.toString(), selectedText]
           window.flutter_inappwebview.callHandler('selection', ...args);
         })
       });
 
       //book location changes callback
-      rendition.on("relocated", function(location) {
-        var location  = {
-        startCfi: location.start.cfi,
-        endCfi:location.end.cfi
-      }
+      rendition.on("relocated", function (location) {
+        var location = {
+          startCfi: location.start.cfi,
+          endCfi: location.end.cfi
+        }
         var args = [location]
         window.flutter_inappwebview.callHandler('relocated', ...args);
       });
 
-      rendition.on('displayError', function(e){
+      rendition.on('displayError', function (e) {
         console.log("displayError")
         window.flutter_inappwebview.callHandler('displayError');
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
       })
 
-<<<<<<< HEAD
-    //book location changes callback
-    rendition.on("relocated", function (location) {
-      var location = {
-        startCfi: location.start.cfi,
-        endCfi: location.end.cfi
-      }
-      var args = [location]
-      window.flutter_inappwebview.callHandler('relocated', ...args);
-    });
-=======
-      rendition.on('markClicked', function(cfiRange){
+      rendition.on('markClicked', function (cfiRange) {
         console.log("markClicked")
         var args = [cfiRange.toString()]
-        window.flutter_inappwebview.callHandler('markClicked',...args);
+        window.flutter_inappwebview.callHandler('markClicked', ...args);
       })
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
 
     }
 
     window.flutter_inappwebview.callHandler('readyToLoad');
 
-<<<<<<< HEAD
 
-
-=======
-    
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
     //move to next page
     function next() {
       rendition.next()
@@ -300,14 +223,7 @@
       })
     }
 
-<<<<<<< HEAD
 
-
-
-
-=======
-    
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
     // adds highlight with given color
     function addHighlight(cfiRange, color, opacity) {
       this.rendition.themes.default({
@@ -324,38 +240,27 @@
       }, "hl", { "fill": color, "fill-opacity": '0.3', "mix-blend-mode": "multiply" });
     }
 
-<<<<<<< HEAD
+    function addUnderLine(cfiString) {
+      rendition.annotations.underline(cfiString)
+    }
+
+    function addMark(cfiString) {
+      rendition.annotations.mark(cfiString)
+    }
+
     function removeHighLight(cfiString) {
       rendition.annotations.remove(cfiString, "highlight");
     }
 
-
-
-
-
-=======
-    function addUnderLine(cfiString){
-      rendition.annotations.underline(cfiString)
+    function removeUnderLine(cfiString) {
+      rendition.annotations.remove(cfiString, "underline");
     }
 
-    function  addMark(cfiString){
-      rendition.annotations.mark(cfiString)
+    function removeMark(cfiString) {
+      rendition.annotations.remove(cfiString, "mark");
     }
 
-    function removeHighLight(cfiString){
-         rendition.annotations.remove(cfiString, "highlight");
-    }
 
-    function removeUnderLine(cfiString){
-         rendition.annotations.remove(cfiString, "underline");
-    }
-
-    function removeMark(cfiString){
-         rendition.annotations.remove(cfiString, "mark");
-    }
-
-    
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
     function search(q) {
       return Promise.all(
         book.spine.spineItems.map(item => item.load(book.load.bind(book)).then(item.find.bind(item, q)).finally(item.unload.bind(item)))
@@ -386,23 +291,18 @@
     function setFontSize(fontSize) {
       rendition.themes.default({
         p: {
-<<<<<<< HEAD
           // "margin": '10px',
           "font-size": `${fontSize}px`
-=======
-        // "margin": '10px',
-        "font-size":`${fontSize}px`
->>>>>>> 73e4138f5b0c0b083c409f1cb0874c12b0ca9fea
         }
       });
     }
 
     //get current page text
-    function getCurrentPageText(){
+    function getCurrentPageText() {
       var startCfi = rendition.location.start.cfi
       var endCfi = rendition.location.end.cfi
       var cfiRange = makeRangeCfi(startCfi, endCfi)
-      book.getRange(cfiRange).then(function (range){
+      book.getRange(cfiRange).then(function (range) {
         var text = range.toString();
         var args = [text, cfiRange]
         window.flutter_inappwebview.callHandler('epubText', ...args);
@@ -410,11 +310,11 @@
     }
 
     //get text from a range
-    function getTextFromCfi(startCfi, endCfi){
+    function getTextFromCfi(startCfi, endCfi) {
       var cfiRange = makeRangeCfi(startCfi, endCfi)
-      book.getRange(cfiRange).then(function (range){
+      book.getRange(cfiRange).then(function (range) {
         var text = range.toString();
-        var args = [text,cfiRange]
+        var args = [text, cfiRange]
         window.flutter_inappwebview.callHandler('epubText', ...args);
       })
     }
@@ -423,40 +323,40 @@
       const CFI = new ePub.CFI()
       const start = CFI.parse(a), end = CFI.parse(b)
       const cfi = {
-          range: true,
-          base: start.base,
-          path: {
-              steps: [],
-              terminal: null
-          },
-          start: start.path,
-          end: end.path
+        range: true,
+        base: start.base,
+        path: {
+          steps: [],
+          terminal: null
+        },
+        start: start.path,
+        end: end.path
       }
       const len = cfi.start.steps.length
       for (let i = 0; i < len; i++) {
-          if (CFI.equalStep(cfi.start.steps[i], cfi.end.steps[i])) {
-              if (i == len - 1) {
-                  // Last step is equal, check terminals
-                  if (cfi.start.terminal === cfi.end.terminal) {
-                      // CFI's are equal
-                      cfi.path.steps.push(cfi.start.steps[i])
-                      // Not a range
-                      cfi.range = false
-                  }
-              } else cfi.path.steps.push(cfi.start.steps[i])
-          } else break
+        if (CFI.equalStep(cfi.start.steps[i], cfi.end.steps[i])) {
+          if (i == len - 1) {
+            // Last step is equal, check terminals
+            if (cfi.start.terminal === cfi.end.terminal) {
+              // CFI's are equal
+              cfi.path.steps.push(cfi.start.steps[i])
+              // Not a range
+              cfi.range = false
+            }
+          } else cfi.path.steps.push(cfi.start.steps[i])
+        } else break
       }
       cfi.start.steps = cfi.start.steps.slice(cfi.path.steps.length)
       cfi.end.steps = cfi.end.steps.slice(cfi.path.steps.length)
 
       return 'epubcfi(' + CFI.segmentString(cfi.base)
-          + '!' + CFI.segmentString(cfi.path)
-          + ',' + CFI.segmentString(cfi.start)
-          + ',' + CFI.segmentString(cfi.end)
-          + ')'
+        + '!' + CFI.segmentString(cfi.path)
+        + ',' + CFI.segmentString(cfi.start)
+        + ',' + CFI.segmentString(cfi.end)
+        + ')'
     }
 
-    
+
   </script>
 
 </body>
