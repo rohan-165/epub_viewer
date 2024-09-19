@@ -77,7 +77,7 @@ class _MainScreenState extends State<MainScreen> {
                           builder: (context) => const MyHomePage(
                                 title: ' 2',
                                 url:
-                                    "https://cdn.ambition.guru/agcdn/medias/2024/7/12/Junga-Bdrko-Yug-NEW.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240718%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240718T111502Z&X-Amz-SignedHeaders=host&X-Amz-Expires=543598&X-Amz-Signature=4fde73d2992388e575c9d9d00427486676381971abbac911f4a67c0e63325c38",
+                                    "https://cdn.ambition.guru/agcdn/medias/2024/8/21/Rudane-3.epub?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20240919%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240919T053947Z&X-Amz-SignedHeaders=host&X-Amz-Expires=563713&X-Amz-Signature=bf38adc44756ca86c5a35f7ab06ffb7557e161bd43cf2f0875ce00eacff38f0a",
                               )));
                 },
                 child: const Text("E-pub 2")),
