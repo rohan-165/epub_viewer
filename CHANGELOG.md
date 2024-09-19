@@ -1,3 +1,17 @@
+## 1.1.2
+
+- Added Annotation click handler
+
+## 1.1.1
+
+- Fixed book reloading issues
+
+## 1.1.0
+
+- Added Local file and asset support
+- Added underline annotation
+- Added text content extraction
+
 ## 1.0.2
 
 - Document changes

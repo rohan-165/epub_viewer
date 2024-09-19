@@ -1,6 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:example/chapter_drawer.dart';
-import 'package:example/search_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -181,6 +182,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  bool isLoading = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -216,48 +219,105 @@ class _MyHomePageState extends State<MyHomePage> {
               )),
         ],
       ),
-      body: ValueListenableBuilder(
-          valueListenable: _fontSize,
-          builder: (_, fontSize, __) {
-            return Center(
-              child: EpubViewer(
-                epubUrl: widget.url,
-                // 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
-                fontSize: fontSize.toInt(),
-                epubController: epubController,
-                displaySettings: EpubDisplaySettings(
-                    flow: EpubFlow.paginated,
-                    snap: true,
-                    allowScriptedContent: true),
-                selectionContextMenu: ContextMenu(
-                  menuItems: [
-                    ContextMenuItem(
-                      title: "Highlight",
-                      androidId: 1,
-                      iosId: "1",
-                      action: () async {
-                        epubController.addHighlight(cfi: textSelectionCfi);
-                      },
-                    ),
-                  ],
-                  // settings: ContextMenuSettings(
-                  //     hideDefaultSystemContextMenuItems: true),
+      // body: ValueListenableBuilder(
+      //     valueListenable: _fontSize,
+      //     builder: (_, fontSize, __) {
+      //       return Center(
+      //         child: EpubViewer(
+      //           epubUrl: widget.url,
+      //           // 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
+      //           fontSize: fontSize.toInt(),
+      //           epubController: epubController,
+      //           displaySettings: EpubDisplaySettings(
+      //               flow: EpubFlow.paginated,
+      //               snap: true,
+      //               allowScriptedContent: true),
+      //           selectionContextMenu: ContextMenu(
+      //             menuItems: [
+      //               ContextMenuItem(
+      //                 title: "Highlight",
+      //                 androidId: 1,
+      //                 iosId: "1",
+      //                 action: () async {
+      //                   epubController.addHighlight(cfi: textSelectionCfi);
+      //                 },
+      //               ),
+      //             ],
+      //             // settings: ContextMenuSettings(
+      //             //     hideDefaultSystemContextMenuItems: true),
+      //           ),
+      //           headers: {},
+      //           onChaptersLoaded: (chapters) {},
+      //           onEpubLoaded: () async {
+      //             print('Epub loaded');
+      //           },
+      //           onRelocated: (value) {
+      //             print("Reloacted to $value");
+      //           },
+      //           onTextSelected: (epubTextSelection) {
+      //             textSelectionCfi = epubTextSelection.selectionCfi;
+      //             print(textSelectionCfi);
+      //           },
+      //         ),
+      //       );
+      //     }),
+      body: SafeArea(
+          child: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                EpubViewer(
+                  epubSource: EpubSource.fromUrl(
+                      'https://github.com/IDPF/epub3-samples/releases/download/20230704/accessible_epub_3.epub'),
+                  epubController: epubController,
+                  displaySettings: EpubDisplaySettings(
+                      flow: EpubFlow.paginated,
+                      snap: true,
+                      allowScriptedContent: true),
+                  selectionContextMenu: ContextMenu(
+                    menuItems: [
+                      ContextMenuItem(
+                        title: "Highlight",
+                        id: 1,
+                        action: () async {
+                          epubController.addHighlight(cfi: textSelectionCfi);
+                        },
+                      ),
+                    ],
+                    settings: ContextMenuSettings(
+                        hideDefaultSystemContextMenuItems: true),
+                  ),
+                  onChaptersLoaded: (chapters) {
+                    setState(() {
+                      isLoading = false;
+                    });
+                  },
+                  onEpubLoaded: () async {
+                    print('Epub loaded');
+                  },
+                  onRelocated: (value) {
+                    print("Reloacted to $value");
+                  },
+                  onAnnotationClicked: (cfi) {
+                    print("Annotation clicked $cfi");
+                  },
+                  onTextSelected: (epubTextSelection) {
+                    textSelectionCfi = epubTextSelection.selectionCfi;
+                    print(textSelectionCfi);
+                  },
                 ),
-                headers: {},
-                onChaptersLoaded: (chapters) {},
-                onEpubLoaded: () async {
-                  print('Epub loaded');
-                },
-                onRelocated: (value) {
-                  print("Reloacted to $value");
-                },
-                onTextSelected: (epubTextSelection) {
-                  textSelectionCfi = epubTextSelection.selectionCfi;
-                  print(textSelectionCfi);
-                },
-              ),
-            );
-          }),
+                Visibility(
+                  visible: isLoading,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      )),
     );
   }
 }

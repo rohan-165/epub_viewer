@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_epub_viewer/src/epub_controller.dart';
 import 'package:flutter_epub_viewer/src/helper.dart';
@@ -12,8 +10,7 @@ class EpubViewer extends StatefulWidget {
   const EpubViewer({
     super.key,
     required this.epubController,
-    required this.epubUrl,
-    this.headers,
+    required this.epubSource,
     this.initialCfi,
     this.onChaptersLoaded,
     this.onEpubLoaded,
@@ -22,16 +19,15 @@ class EpubViewer extends StatefulWidget {
     this.displaySettings,
     this.selectionContextMenu,
     this.fontSize,
+    this.onAnnotationClicked,
   });
 
   ///Epub controller to manage epub
   final EpubController epubController;
 
-  ///Epub url to load epub from network
-  final String epubUrl;
-
-  ///Epub headers to load epub from network
-  final Map<String, String>? headers;
+  ///Epub source, accepts url, file or assets
+  ///opf format is not tested, use with caution
+  final EpubSource epubSource;
 
   ///Initial cfi string to  specify which part of epub to load initially
   ///if null, the first chapter will be loaded
@@ -55,6 +51,9 @@ class EpubViewer extends StatefulWidget {
   ///initial display settings
   final int? fontSize;
 
+  ///Callback for handling annotation click (Highlight and Underline)
+  final ValueChanged<String>? onAnnotationClicked;
+
   ///context menu for text selection
   ///if null, the default context menu will be used
   final ContextMenu? selectionContextMenu;
@@ -66,8 +65,6 @@ class EpubViewer extends StatefulWidget {
 class _EpubViewerState extends State<EpubViewer> {
   final GlobalKey webViewKey = GlobalKey();
 
-  final LocalServerController localServerController = LocalServerController();
-
   // late PullToRefreshController pullToRefreshController;
   // late ContextMenu contextMenu;
   var selectedText = '';
@@ -75,9 +72,24 @@ class _EpubViewerState extends State<EpubViewer> {
 
   InAppWebViewController? webViewController;
 
+  InAppWebViewSettings settings = InAppWebViewSettings();
+
   @override
   void initState() {
-    // widget.epubController.initServer();
+    settings = InAppWebViewSettings(
+      defaultFontSize: widget.fontSize,
+      isInspectable: kDebugMode,
+      javaScriptEnabled: true,
+      mediaPlaybackRequiresUserGesture: false,
+      transparentBackground: true,
+      supportZoom: false,
+      allowsInlineMediaPlayback: true,
+      disableLongPressContextMenuOnLinks: false,
+      iframeAllowFullscreen: true,
+      allowsLinkPreview: false,
+      verticalScrollBarEnabled: false,
+      selectionGranularity: SelectionGranularity.CHARACTER,
+    );
     super.initState();
   }
 
@@ -137,156 +149,115 @@ class _EpubViewerState extends State<EpubViewer> {
           var location = data[0];
           widget.onRelocated?.call(EpubLocation.fromJson(location));
         });
+
+    webViewController?.addJavaScriptHandler(
+        handlerName: "readyToLoad",
+        callback: (data) {
+          loadBook();
+        });
+
+    webViewController?.addJavaScriptHandler(
+        handlerName: "displayError",
+        callback: (data) {
+          // loadBook();
+        });
+
+    webViewController?.addJavaScriptHandler(
+        handlerName: "markClicked",
+        callback: (data) {
+          String cfi = data[0];
+          widget.onAnnotationClicked?.call(cfi);
+        });
+
+    webViewController?.addJavaScriptHandler(
+        handlerName: "epubText",
+        callback: (data) {
+          var text = data[0].trim();
+          var cfi = data[1];
+          widget.epubController.pageTextCompleter
+              .complete(EpubTextExtractRes(text: text, cfiRange: cfi));
+        });
+  }
+
+  loadBook() async {
+    var data = await widget.epubSource.epubData;
+    final displaySettings = widget.displaySettings ?? EpubDisplaySettings();
+    String manager = displaySettings.manager.name;
+    String flow = displaySettings.flow.name;
+    String spread = displaySettings.spread.name;
+    bool snap = displaySettings.snap;
+    bool allowScripted = displaySettings.allowScriptedContent;
+    String cfi = widget.initialCfi ?? "";
+
+    webViewController?.evaluateJavascript(
+        source:
+            'loadBook([${data.join(',')}], "$cfi", "$manager", "$flow", "$spread", $snap, $allowScripted)');
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: localServerController.initServer(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return Container();
-          }
+    return InAppWebView(
+      contextMenu: widget.selectionContextMenu,
+      key: webViewKey,
+      initialFile:
+          'packages/flutter_epub_viewer/lib/assets/webpage/html/swipe.html',
+      // initialUrlRequest: URLRequest(
+      //     url: WebUri(
+      //         'http://localhost:8080/html/swipe.html?cfi=${widget.initialCfi ?? ''}&displaySettings=$displaySettings')),
+      initialSettings: settings,
+      // pullToRefreshController: pullToRefreshController,
+      onWebViewCreated: (controller) async {
+        webViewController = controller;
+        widget.epubController.setWebViewController(controller);
+        // await loadBook();
+        addJavaScriptHandlers();
+      },
+      onLoadStart: (controller, url) {},
+      onPermissionRequest: (controller, request) async {
+        return PermissionResponse(
+            resources: request.resources,
+            action: PermissionResponseAction.GRANT);
+      },
+      shouldOverrideUrlLoading: (controller, navigationAction) async {
+        var uri = navigationAction.request.url!;
 
-          final displaySettings = jsonEncode(widget.displaySettings?.toJson() ??
-              EpubDisplaySettings().toJson());
+        if (!["http", "https", "file", "chrome", "data", "javascript", "about"]
+            .contains(uri.scheme)) {
+          // if (await canLaunchUrl(uri)) {
+          //   // Launch the App
+          //   await launchUrl(
+          //     uri,
+          //   );
+          //   // and cancel the request
+          //   return NavigationActionPolicy.CANCEL;
+          // }
+        }
 
-          final headers = jsonEncode(widget.headers);
+        return NavigationActionPolicy.ALLOW;
+      },
+      onLoadStop: (controller, url) async {},
+      onReceivedError: (controller, request, error) {},
 
-          // Convert the string to a list of bytes using UTF-8 encoding
-          List<int> bytes = utf8.encode(widget.epubUrl);
+      onProgressChanged: (controller, progress) {},
+      onUpdateVisitedHistory: (controller, url, androidIsReload) {},
+      onConsoleMessage: (controller, consoleMessage) {
+        if (kDebugMode) {
+          debugPrint("JS_LOG: ${consoleMessage.message}");
+          // debugPrint(consoleMessage.message);
+        }
+      },
+      gestureRecognizers: {
+        Factory<VerticalDragGestureRecognizer>(
+            () => VerticalDragGestureRecognizer()),
+        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(
+            duration: const Duration(milliseconds: 30))),
+      },
+    );
+  }
 
-          // Encode the list of bytes to a Base64 string
-          String base64String = base64.encode(bytes);
-
-          return ValueListenableBuilder(
-              valueListenable: _isLoading,
-              builder: (_, isLoading, __) {
-                return Stack(
-                  children: [
-                    InAppWebView(
-                      contextMenu: widget.selectionContextMenu,
-                      key: webViewKey,
-                      initialUrlRequest: URLRequest(
-                          url: WebUri(
-                              'http://localhost:8001/html/swipe.html?epubUrl=${base64String}&cfi=${widget.initialCfi ?? ''}&displaySettings=$displaySettings&headers=$headers')),
-                      // initialSettings: InAppWebViewSettings(
-                      //   isInspectable: kDebugMode,
-                      //   javaScriptEnabled: true,
-                      //   mediaPlaybackRequiresUserGesture: false,
-                      //   transparentBackground: true,
-                      //   supportZoom: false,
-                      //   builtInZoomControls: false,
-                      //   displayZoomControls: false,
-                      //   allowsInlineMediaPlayback: true,
-                      //   disableLongPressContextMenuOnLinks: false,
-                      //   iframeAllowFullscreen: true,
-                      //   allowsLinkPreview: false,
-                      //   verticalScrollBarEnabled: false,
-                      //   defaultFontSize: widget.fontSize,
-                      //   selectionGranularity: SelectionGranularity.CHARACTER,
-                      // ),
-                      // pullToRefreshController: pullToRefreshController,
-                      androidOnPermissionRequest:
-                          (InAppWebViewController controller, String origin,
-                              List<String> resources) async {
-                        return PermissionRequestResponse(
-                            resources: resources,
-                            action: PermissionRequestResponseAction.GRANT);
-                      },
-                      initialOptions: InAppWebViewGroupOptions(
-                        crossPlatform: InAppWebViewOptions(
-                          disableVerticalScroll: true,
-                          disableHorizontalScroll: false,
-                          supportZoom: false,
-                          mediaPlaybackRequiresUserGesture: false,
-                          javaScriptEnabled: true,
-                          userAgent:
-                              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36',
-                        ),
-                        android: AndroidInAppWebViewOptions(
-                          overScrollMode:
-                              AndroidOverScrollMode.OVER_SCROLL_NEVER,
-                          defaultFontSize: widget.fontSize ?? 16,
-                          builtInZoomControls:
-                              false, // Disable built-in zoom controls
-                          displayZoomControls: false, // Hide zoom controls
-                          useHybridComposition:
-                              true, // Enable hybrid composition to improve performance on Android
-                        ),
-                        ios: IOSInAppWebViewOptions(
-                          allowsInlineMediaPlayback: true,
-                          allowsAirPlayForMediaPlayback: true,
-                        ),
-                      ),
-                      onWebViewCreated: (controller) {
-                        webViewController = controller;
-                        widget.epubController.setWebViewController(controller);
-                        addJavaScriptHandlers();
-                      },
-                      // onPermissionRequest: (controller, request) async {
-                      //   return PermissionResponse(
-                      //       resources: request.resources,
-                      //       action: PermissionResponseAction.GRANT);
-                      // },
-                      shouldOverrideUrlLoading:
-                          (controller, navigationAction) async {
-                        var uri = navigationAction.request.url!;
-
-                        if (![
-                          "http",
-                          "https",
-                          "file",
-                          "chrome",
-                          "data",
-                          "javascript",
-                          "about"
-                        ].contains(uri.scheme)) {
-                          // if (await canLaunchUrl(uri)) {
-                          //   // Launch the App
-                          //   await launchUrl(
-                          //     uri,
-                          //   );
-                          //   // and cancel the request
-                          //   return NavigationActionPolicy.CANCEL;
-                          // }
-                        }
-
-                        return NavigationActionPolicy.ALLOW;
-                      },
-                      onLoadStart: (controller, url) async {},
-                      onLoadStop: (controller, url) async {},
-                      // onReceivedError: (controller, request, error) {},
-                      onProgressChanged: (controller, progress) {},
-                      onUpdateVisitedHistory:
-                          (controller, url, androidIsReload) {},
-                      onConsoleMessage: (controller, consoleMessage) {
-                        if (kDebugMode) {
-                          debugPrint("JS_LOG: ${consoleMessage.message}");
-                          // debugPrint(consoleMessage.message);
-                        }
-                      },
-                      gestureRecognizers: {
-                        Factory<VerticalDragGestureRecognizer>(
-                            () => VerticalDragGestureRecognizer()),
-                        Factory<LongPressGestureRecognizer>(() =>
-                            LongPressGestureRecognizer(
-                                duration: const Duration(milliseconds: 30))),
-                      },
-                    ),
-                    if (isLoading) ...{
-                      Positioned.fill(
-                        child: Container(
-                          color: Colors.white,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      )
-                    },
-                  ],
-                );
-              });
-        });
+  @override
+  void dispose() {
+    webViewController?.dispose();
+    super.dispose();
   }
 }

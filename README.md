@@ -9,12 +9,13 @@ A Flutter package for viewing Epub documents, developed by combining the power o
 - Highly customizable UI
 - Resume reading using cfi
 - Custom context menus for selection
+- Load from File, URl, Assets
 
 <img width='50%' src="https://github.com/fayis672/epub_viewer/blob/main/example/epub_viewr_exp.gif?raw=true">
 
 ## Limitations
 
-- Loading from local files and assets is not supported
+- opf format not supported fully
 
 ## Getting started
 
@@ -59,7 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Expanded(
             child: EpubViewer(
-              epubUrl: 'https://s3.amazonaws.com/moby-dick/OPS/package.opf',
+              epubSource: EpubSource.fromUrl(
+                  'https://github.com/IDPF/epub3-samples/releases/download/20230704/accessible_epub_3.epub'),
               epubController: epubController,
               displaySettings:
                   EpubDisplaySettings(flow: EpubFlow.paginated, snap: true),
@@ -83,8 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
 //Epub controller to manage epub
 final  EpubController  epubController;
 
-///Epub url to load epub from network
-final  String  epubUrl;
+///Epub source, accepts url, file or assets
+///opf format is not tested, use with caution
+final  String  epubSource;
 
 ///Epub headers to load epub from network
 final  Map<String, String> headers;
@@ -104,6 +107,9 @@ final  ValueChanged<EpubLocation>?  onRelocated;
 
 ///Call back when text selection changes
 final  ValueChanged<EpubTextSelection>?  onTextSelected;
+
+///Callback for handling annotation click (Highlight and Underline)
+final ValueChanged<String>? onAnnotationClicked;
 
 ///initial display settings
 final  EpubDisplaySettings?  displaySettings;
@@ -143,8 +149,14 @@ epubController.addHighlight(
 	opacity:0,5
 )
 
-///remove hightlight
+///remove highlight
 epubController.removeHighlight(cfi:cfi)
+
+///Add underline annotation
+epubController.addUnderline(cfi:cfi)
+
+///Remove underline annotation
+epubController.removeUnderline(cfi:cfi)
 
 ///Set [EpubSpread] value
 epubController.setSpread(spread:spread)
@@ -157,15 +169,21 @@ epubController.setManager(manager:manager)
 
 ///Adjust font size in epub viewer
 epubController.setFontSize(fontSize:16)
+
+///Extract text from a given cfi range
+epubController.extractText(startCfi:cfi,endCfi:cfi)
+
+///Extract text from current page
+epubController.extractCurrentPageText()
 ```
 
 ## Known Issues
 
-- `onRelocated` callback is broken when `snap` in `epubDisplaySettings==true`
+- `onRelocated` callback is broken when `snap==true` in `epubDisplaySettings` for android
 
 ## Upcoming features
 
-- More annotations (underline, mark etc)
-- Text extraction
+- Annotations customization
 - More callbacks (rendered, error etc)
-- Support for local files and assets
+- Night mode and Theme customization
+- Reading progress
